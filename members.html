@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MEMBERS — BOYNEXTDOOR ★</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* Extra member photo styles */
+    .m-photo-wrap {
+      width: 100%; height: 180px;
+      overflow: hidden;
+      background: #f0f0f8;
+      position: relative;
+    }
+    .m-photo-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .m-card:hover .m-photo-wrap img { transform: scale(1.05); }
+    .m-photo-fallback {
+      width:100%; height:100%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:64px;
+      background: linear-gradient(135deg,#f8f0ff,#f0f8ff);
+    }
+    /* Photo credit tooltip */
+    .photo-note {
+      position:absolute; bottom:4px; right:4px;
+      background:rgba(0,0,0,0.55); color:#fff;
+      font-size:9px; padding:1px 5px; border-radius:3px;
+    }
+  </style>
+</head>
+<body>
+<div class="desktop">
+
+  <div class="d-icons">
+    <a href="index.html"   class="d-icon"><div class="d-icon-img">🖥️</div><span>My Computer</span></a>
+    <a href="members.html" class="d-icon"><div class="d-icon-img">👥</div><span>Members.exe</span></a>
+    <a href="music.html"   class="d-icon"><div class="d-icon-img">🎵</div><span>Music.exe</span></a>
+    <a href="camera.html" class="d-icon"><div class="d-icon-img">📷</div><span>Camera.exe</span></a>
+    <a href="#"            class="d-icon"><div class="d-icon-img">🗑️</div><span>Recycle Bin</span></a>
+  </div>
+
+  <!-- deco -->
+  <div class="deco deco-fish"   style="top:155px;left:350px;animation-delay:-1s;">🐠</div>
+  <div class="deco deco-star"   style="top:90px;left:50%;font-size:16px;color:#ff69b4;">✦</div>
+  <div class="deco deco-star"   style="top:72px;left:56%;font-size:13px;color:#ffee00;animation-delay:.7s;">✧</div>
+  <div class="deco deco-flower" style="bottom:185px;left:8px;">🌺</div>
+
+  <!-- ══ VISITOR ══ -->
+  <div class="win win-visitor">
+    <div class="win-title"><div class="win-title-text">⚠ Window</div><div class="win-btns"><div class="win-btn">✕</div></div></div>
+    <div class="wb" style="background:#fff;text-align:center;padding:10px;">
+      <div class="v-badge">NEW MEMBER FILE FOUND!</div>
+      <div style="font-size:26px;margin:4px 0;">📂</div>
+      <div class="v-prize">LOADING<br/>MEMBER<br/>PROFILES...</div>
+      <div class="v-sub">6 files found 💚</div>
+    </div>
+    <div class="alert-btns" style="justify-content:center;"><a href="#" class="xp-btn blue">Open All</a></div>
+  </div>
+
+  <!-- ══ AIRDROP ══ -->
+  <div class="win win-airdrop">
+    <div class="ad-head">📡 AirDrop from: Sungho</div>
+    <div class="ad-body">
+      <div class="ad-avatar">🎵</div>
+      <div class="ad-txt"><strong>Sungho (BND)</strong>wants to share:<br/>"Serenade.mp3" 🎶</div>
+    </div>
+    <div class="ad-btns"><a href="#" class="ad-btn dec">Decline</a><a href="music.html" class="ad-btn">Accept</a></div>
+  </div>
+
+  <!-- ══ MAIN MEMBERS WINDOW ══ -->
+  <div class="win page-win">
+    <div class="win-title">
+      <div class="win-title-text">👥 MEMBERS.exe — Profile Database</div>
+      <div class="win-btns"><div class="win-btn">_</div><div class="win-btn">□</div><div class="win-btn">✕</div></div>
+    </div>
+    <div class="pw-body">
+      <div class="page-ttl">[ MEMBER <span>PROFILES</span> ] — 6/6 LOADED ✅</div>
+
+      
+
+      <div class="members-grid">
+
+        <!-- JAEHYUN -->
+        <div class="m-card">
+          <div class="m-card-head mc-jaehyun">
+            <span style="font-family:'VT323',monospace;font-size:13px;">01</span>
+            <span>LEADER · VOCALIST · RAPPER</span>
+          </div>
+          <div class="m-photo-wrap">
+            <img src="jaehyun.jpg" alt="Jaehyun"
+              onerror="this.parentNode.innerHTML='<div class=\'m-photo-fallback\'>🎤</div>'">
+            <span class="photo-note">Myung Jaehyun</span>
+          </div>
+          <div class="m-card-body">
+            <div class="m-name-kr">명재현</div>
+            <div class="m-name-en">JAEHYUN</div>
+            <div class="m-stat"><span class="m-sk">BORN:</span><span>Dec 4, 2003</span></div>
+            <div class="m-stat"><span class="m-sk">ORIGIN:</span><span>South Korea</span></div>
+            <div class="m-stat"><span class="m-sk">MBTI:</span><span>ENFP</span></div>
+            <div class="m-stat"><span class="m-sk">ROLE:</span><span>Leader, Vocalist</span></div>
+            <div class="m-fact">★ Loves dogs &amp; soccer. Big BTS/Jungkook fan!</div>
+            <div class="m-bars">
+              <div class="m-bar-row"><div class="m-bar-lbl">CHARISMA</div><div class="m-bar-track"><div class="m-bar-fill" style="width:95%"></div></div></div>
+              <div class="m-bar-row"><div class="m-bar-lbl">VOCALS</div><div class="m-bar-track"><div class="m-bar-fill" style="width:87%"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUNGHO -->
+        <div class="m-card">
+          <div class="m-card-head mc-sungho">
+            <span style="font-family:'VT323',monospace;font-size:13px;">02</span>
+            <span>MAIN VOCALIST</span>
+          </div>
+          <div class="m-photo-wrap">
+            <img src="sungho.jpg" alt="Sungho"
+              onerror="this.parentNode.innerHTML='<div class=\'m-photo-fallback\'>🎵</div>'">
+            <span class="photo-note">Sungho</span>
+          </div>
+          <div class="m-card-body">
+            <div class="m-name-kr">성호</div>
+            <div class="m-name-en">SUNGHO</div>
+            <div class="m-stat"><span class="m-sk">BORN:</span><span>Sep 4, 2003</span></div>
+            <div class="m-stat"><span class="m-sk">MBTI:</span><span>INFJ</span></div>
+            <div class="m-stat"><span class="m-sk">ROLE:</span><span>Main Vocalist</span></div>
+            <div class="m-fact">★ Loves foxes 🦊. Was in a band in middle school!</div>
+            <div class="m-bars">
+              <div class="m-bar-row"><div class="m-bar-lbl">VOCALS</div><div class="m-bar-track"><div class="m-bar-fill" style="width:98%"></div></div></div>
+              <div class="m-bar-row"><div class="m-bar-lbl">STAGE PRESENCE</div><div class="m-bar-track"><div class="m-bar-fill" style="width:90%"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIWOO -->
+        <div class="m-card">
+          <div class="m-card-head mc-riwoo">
+            <span style="font-family:'VT323',monospace;font-size:13px;">03</span>
+            <span>MAIN DANCER · VOCALIST</span>
+          </div>
+          <div class="m-photo-wrap">
+            <img src="riwoo.jpg" alt="Riwoo"
+              onerror="this.parentNode.innerHTML='<div class=\'m-photo-fallback\'>💃</div>'">
+            <span class="photo-note">Riwoo</span>
+          </div>
+          <div class="m-card-body">
+            <div class="m-name-kr">리우</div>
+            <div class="m-name-en">RIWOO</div>
+            <div class="m-stat"><span class="m-sk">BORN:</span><span>Oct 22, 2003</span></div>
+            <div class="m-stat"><span class="m-sk">SCHOOL:</span><span>Hanlim Multi Art</span></div>
+            <div class="m-stat"><span class="m-sk">ROLE:</span><span>Main Dancer</span></div>
+            <div class="m-fact">★ Loves otters 🦦! Known for incredible stage energy.</div>
+            <div class="m-bars">
+              <div class="m-bar-row"><div class="m-bar-lbl">DANCE</div><div class="m-bar-track"><div class="m-bar-fill" style="width:99%"></div></div></div>
+              <div class="m-bar-row"><div class="m-bar-lbl">ENERGY</div><div class="m-bar-track"><div class="m-bar-fill" style="width:93%"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAESAN -->
+        <div class="m-card">
+          <div class="m-card-head mc-taesan">
+            <span style="font-family:'VT323',monospace;font-size:13px;">04</span>
+            <span>VOCALIST · RAPPER · COMPOSER</span>
+          </div>
+          <div class="m-photo-wrap">
+            <img src="taesan.jpg" alt="Taesan"
+              onerror="this.parentNode.innerHTML='<div class=\'m-photo-fallback\'>🎶</div>'">
+            <span class="photo-note">Taesan</span>
+          </div>
+          <div class="m-card-body">
+            <div class="m-name-kr">태산</div>
+            <div class="m-name-en">TAESAN</div>
+            <div class="m-stat"><span class="m-sk">ROLE:</span><span>Vocalist, Rapper</span></div>
+            <div class="m-stat"><span class="m-sk">SKILLS:</span><span>Composing, Writing</span></div>
+            <div class="m-fact">★ Contributed to songwriting on the debut album!</div>
+            <div class="m-bars">
+              <div class="m-bar-row"><div class="m-bar-lbl">RAPPING</div><div class="m-bar-track"><div class="m-bar-fill" style="width:91%"></div></div></div>
+              <div class="m-bar-row"><div class="m-bar-lbl">COMPOSING</div><div class="m-bar-track"><div class="m-bar-fill" style="width:88%"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LEEHAN -->
+        <div class="m-card">
+          <div class="m-card-head mc-leehan">
+            <span style="font-family:'VT323',monospace;font-size:13px;">05</span>
+            <span>VOCALIST</span>
+          </div>
+          <div class="m-photo-wrap">
+            <img src="leehan.jpg" alt="Leehan"
+              onerror="this.parentNode.innerHTML='<div class=\'m-photo-fallback\'>🌊</div>'">
+            <span class="photo-note">Leehan</span>
+          </div>
+          <div class="m-card-body">
+            <div class="m-name-kr">이한</div>
+            <div class="m-name-en">LEEHAN</div>
+            <div class="m-stat"><span class="m-sk">ROLE:</span><span>Vocalist</span></div>
+            <div class="m-stat"><span class="m-sk">HOBBY:</span><span>Fishkeeping 🐟</span></div>
+            <div class="m-fact">★ Known as "Fish Dad Leehan"! Featured in Weverse Magazine.</div>
+            <div class="m-bars">
+              <div class="m-bar-row"><div class="m-bar-lbl">VOCALS</div><div class="m-bar-track"><div class="m-bar-fill" style="width:89%"></div></div></div>
+              <div class="m-bar-row"><div class="m-bar-lbl">VIBES</div><div class="m-bar-track"><div class="m-bar-fill" style="width:96%"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WOONHAK -->
+        <div class="m-card">
+          <div class="m-card-head mc-woonhak">
+            <span style="font-family:'VT323',monospace;font-size:13px;">06</span>
+            <span>RAPPER · MAKNAE · COMPOSER</span>
+          </div>
+          <div class="m-photo-wrap">
+            <img src="woonhak.jpg" alt="Woonhak"
+              onerror="this.parentNode.innerHTML='<div class=\'m-photo-fallback\'>⚡</div>'">
+            <span class="photo-note">Woonhak</span>
+          </div>
+          <div class="m-card-body">
+            <div class="m-name-kr">운학</div>
+            <div class="m-name-en">WOONHAK</div>
+            <div class="m-stat"><span class="m-sk">ROLE:</span><span>Rapper, Maknae</span></div>
+            <div class="m-stat"><span class="m-sk">SKILLS:</span><span>Rapping, Writing</span></div>
+            <div class="m-fact">★ The youngest! Also a songwriter on the debut album. ⚡</div>
+            <div class="m-bars">
+              <div class="m-bar-row"><div class="m-bar-lbl">RAPPING</div><div class="m-bar-track"><div class="m-bar-fill" style="width:93%"></div></div></div>
+              <div class="m-bar-row"><div class="m-bar-lbl">MAKNAE ENERGY</div><div class="m-bar-track"><div class="m-bar-fill" style="width:100%"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- .members-grid -->
+
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+        <a href="index.html" class="xp-btn">🏠 Home</a>
+        <a href="music.html" class="xp-btn blue">🎵 Music →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MS PAINT -->
+  <div class="win win-paint">
+    <div class="win-title"><div class="win-title-text">🎨 fanart — Paint</div><div class="win-btns"><div class="win-btn">_</div><div class="win-btn">□</div><div class="win-btn">✕</div></div></div>
+    <div class="paint-menu"><span class="pm">File</span><span class="pm">Edit</span><span class="pm">View</span><span class="pm">Image</span></div>
+    <div class="paint-canvas"><div class="css-heart"></div><div class="paint-cursor">6/6 ♡_</div></div>
+    <div class="paint-tools">
+      <div class="pt">✏️</div><div class="pt">🪣</div><div class="pt">⬛</div><div class="pt">○</div>
+      <div class="pt" style="background:#ff8080;"></div><div class="pt" style="background:#ffa040;"></div>
+      <div class="pt" style="background:#40c8ff;"></div><div class="pt" style="background:#9060ff;"></div>
+      <div class="pt" style="background:#40dd80;"></div><div class="pt" style="background:#ff40a0;"></div>
+    </div>
+  </div>
+
+  <!-- WARNING POPUP -->
+  <div class="win win-delete">
+    <div class="win-title"><div class="win-title-text">⚠ System Warning</div><div class="win-btns"><div class="win-btn">✕</div></div></div>
+    <div class="wb">
+      <span style="font-size:20px;">⚠️</span>
+      <span>WARNING: Viewing profiles<br/>may cause <strong>extreme bias<br/>damage</strong> 💘</span>
+    </div>
+    <div class="alert-btns"><a href="#" class="xp-btn">I'll be fine</a><a href="#" class="xp-btn pink">Send Help</a></div>
+  </div>
+
+</div>
+
+<div class="no-signal">
+  <div class="ns-bars"><div class="nsb nsb1"></div><div class="nsb nsb2"></div><div class="nsb nsb3"></div><div class="nsb nsb4"></div></div>
+  <span class="ns-lbl">NO SIGNAL</span>
+</div>
+
+<div class="marquee-strip">
+  <marquee behavior="scroll" direction="left" scrollamount="4">
+    👥 JAEHYUN · SUNGHO · RIWOO · TAESAN · LEEHAN · WOONHAK ★ &nbsp;&nbsp; 6 MEMBERS &nbsp;&nbsp; ★ KOZ ENTERTAINMENT ★ &nbsp;&nbsp; DEBUTED MAY 30, 2023 &nbsp;&nbsp; ★ ONEDOOR WE LOVE YOU ★ &nbsp;&nbsp;
+  </marquee>
+</div>
+
+<div class="taskbar">
+  <div class="start-btn">⊞ start</div>
+  <div class="taskbar-sep"></div>
+  <a href="index.html"   class="tb-btn">🏠 Home</a>
+  <a href="members.html" class="tb-btn active">👥 Members</a>
+  <a href="music.html"   class="tb-btn">🎵 Music</a>
+  <a href="camera.html"  class="tb-btn">📷 Camera</a>
+  <div class="taskbar-right"><span class="tb-clock">🔊 &nbsp;11:03 AM</span></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>📷 CAMERA — BOYNEXTDOOR ★</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+
+    /* ── CAMERA PAGE EXTRAS ── */
+    .cam-win {
+      top: 32px; left: 50%; transform: translateX(-50%);
+      width: min(780px, 94vw);
+      z-index: 200;
+      animation: pop-in-center .6s cubic-bezier(.34,1.3,.64,1) both;
+    }
+    .cam-win .win-title {
+      background: linear-gradient(90deg, #880000, #cc2222, #880000);
+    }
+
+    @keyframes pop-in-center {
+      from { opacity:0; transform: translateX(-50%) scale(0.75); }
+      to   { opacity:1; transform: translateX(-50%) scale(1); }
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    @keyframes drift-y { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-14px) rotate(15deg);} }
+    @keyframes heart-beat { 0%,100%{transform:scale(1);} 50%{transform:scale(1.18);} }
+    @keyframes spin-slow { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+    @keyframes rec-blink { 0%,49%{opacity:1;} 50%,100%{opacity:0;} }
+    @keyframes countdown-pop {
+      0%   { transform:scale(0.3); opacity:0; }
+      40%  { transform:scale(1.4); opacity:1; }
+      70%  { transform:scale(0.9); }
+      100% { transform:scale(1); opacity:1; }
+    }
+    @keyframes flash-white {
+      0%   { opacity:0; }
+      10%  { opacity:1; }
+      100% { opacity:0; }
+    }
+    @keyframes shake {
+      0%,100%{transform:translateX(0);} 20%{transform:translateX(-5px);}
+      40%{transform:translateX(5px);}  60%{transform:translateX(-4px);} 80%{transform:translateX(4px);}
+    }
+
+    /* ── MAIN CAM BODY ── */
+    .cam-body {
+      background: linear-gradient(160deg, #ffd6ec 0%, #ffe8f8 40%, #d8f0ff 100%);
+      padding: 14px;
+    }
+
+    /* ── TWO-COLUMN LAYOUT ── */
+    .cam-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 14px;
+    }
+
+    @media(max-width:640px) {
+      .cam-layout { grid-template-columns: 1fr; }
+      .cam-sidebar { display: none; }
+    }
+
+    /* ── VIDEO FEED ── */
+    .cam-screen-wrap {
+      position: relative;
+      background: #000;
+      border: 4px solid;
+      border-color: #fff #606060 #606060 #fff;
+      box-shadow: 2px 2px 0 #000;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+    }
+
+    #cam-video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scaleX(-1); /* mirror selfie */
+    }
+
+    /* Off-state placeholder */
+    .cam-off {
+      position: absolute; inset: 0;
+      background: #111;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px;
+    }
+    .cam-off-icon { font-size: 60px; }
+    .cam-off-text {
+      font-family: 'VT323', monospace; font-size: 20px; color: #555;
+      text-align: center; line-height: 1.5;
+    }
+
+    /* Overlays on video */
+    .cam-overlay {
+      position: absolute; inset: 0; pointer-events: none;
+    }
+
+    /* REC indicator */
+    .rec-badge {
+      position: absolute; top: 10px; left: 10px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid #ff3333;
+      padding: 2px 8px;
+      font-family: 'VT323', monospace; font-size: 16px; color: #ff3333;
+      display: flex; align-items: center; gap: 5px;
+      opacity: 0;
+    }
+    .rec-badge.active { opacity: 1; }
+    .rec-dot { width: 8px; height: 8px; border-radius: 50%; background: #ff3333; animation: rec-blink 1s step-end infinite; }
+
+    /* Filter name label */
+    .filter-label {
+      position: absolute; bottom: 10px; left: 10px;
+      background: rgba(0,0,0,0.6);
+      font-family: 'VT323', monospace; font-size: 16px; color: #ffff00;
+      padding: 2px 8px;
+    }
+
+    /* Sticker overlays on canvas */
+    .sticker-layer {
+      position: absolute; inset: 0;
+      pointer-events: none;
+    }
+
+    /* Flash overlay */
+    .flash-overlay {
+      position: absolute; inset: 0;
+      background: #fff;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .flash-overlay.flash { animation: flash-white 0.5s ease-out forwards; }
+
+    /* Countdown number */
+    .countdown-display {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Pacifico', cursive;
+      font-size: 120px;
+      color: #fff;
+      text-shadow: 0 0 30px rgba(255,105,180,0.8), 3px 3px 0 #ff1493;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .countdown-display.show { animation: countdown-pop 0.6s ease both; opacity: 1; }
+
+    /* ── DATE / TIME STAMP on screen ── */
+    .cam-timestamp {
+      position: absolute; top: 10px; right: 10px;
+      font-family: 'VT323', monospace; font-size: 15px;
+      color: #ffff00;
+      background: rgba(0,0,0,0.55);
+      padding: 2px 8px;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    /* ── CONTROLS BELOW VIDEO ── */
+    .cam-controls {
+      display: flex; flex-wrap: wrap;
+      gap: 6px; margin-top: 10px;
+      align-items: center; justify-content: center;
+    }
+
+    .cam-btn {
+      background: linear-gradient(180deg, #ece9d8, #d4d0c8);
+      border: 2px solid; border-color: #fff #808080 #808080 #fff;
+      font-family: 'Comic Neue', cursive; font-size: 12px;
+      padding: 6px 14px; cursor: pointer; color: #000;
+      display: flex; align-items: center; gap: 5px;
+      transition: border-color 0.1s;
+    }
+    .cam-btn:hover { border-color: #808080 #fff #fff #808080; background: linear-gradient(180deg,#d4d0c8,#ece9d8); }
+    .cam-btn:active { border-color: #808080 #fff #fff #808080; transform: translateY(1px); }
+    .cam-btn.big {
+      background: linear-gradient(180deg,#ff80c0,#dd2080);
+      border-color: #ffaadd #aa0060 #aa0060 #ffaadd;
+      color: #fff; font-size: 16px; padding: 8px 20px;
+      font-weight: 700; text-shadow: 1px 1px 1px #000;
+    }
+    .cam-btn.blue {
+      background: linear-gradient(180deg,#4a8ee8,#1a5ccc);
+      border-color: #88bbff #0030aa #0030aa #88bbff;
+      color: #fff;
+    }
+    .cam-btn.green {
+      background: linear-gradient(180deg,#60cc40,#2a8818);
+      border-color: #90ff60 #1a5008 #1a5008 #90ff60;
+      color: #fff;
+    }
+
+    /* ── FILTERS ── */
+    .filter-none     { filter: none; }
+    .filter-pink     { filter: sepia(0.3) saturate(1.8) hue-rotate(300deg) brightness(1.1); }
+    .filter-retro    { filter: sepia(0.8) contrast(1.2) brightness(0.9) saturate(1.4); }
+    .filter-dreamy   { filter: blur(0.5px) saturate(1.6) brightness(1.15) hue-rotate(10deg); }
+    .filter-bw       { filter: grayscale(1) contrast(1.1); }
+    .filter-vhs      { filter: saturate(1.8) contrast(1.3) hue-rotate(-10deg) brightness(0.9); }
+    .filter-cool     { filter: saturate(1.4) hue-rotate(180deg) brightness(1.1); }
+    .filter-warm     { filter: sepia(0.4) saturate(1.6) brightness(1.1) contrast(1.1); }
+
+    /* Filter buttons row */
+    .filter-row {
+      display: flex; gap: 5px; flex-wrap: wrap;
+      margin-top: 8px; justify-content: center;
+    }
+    .filter-btn {
+      background: linear-gradient(180deg, #ece9d8, #d4d0c8);
+      border: 2px solid; border-color: #fff #808080 #808080 #fff;
+      font-family: 'Comic Neue', cursive; font-size: 10px;
+      padding: 4px 10px; cursor: pointer; color: #000;
+    }
+    .filter-btn:hover { background: linear-gradient(180deg,#d4d0c8,#ece9d8); }
+    .filter-btn.active {
+      border-color: #808080 #fff #fff #808080;
+      background: linear-gradient(180deg,#ff80c0,#dd2080);
+      color: #fff;
+    }
+
+    /* ── SIDEBAR ── */
+    .cam-sidebar { display: flex; flex-direction: column; gap: 10px; }
+
+    /* Gallery */
+    .gallery-win {
+      background: #ece9d8;
+      border: 2px solid; border-color: #fff #606060 #606060 #fff;
+      box-shadow: 2px 2px 0 #000;
+      flex: 1;
+    }
+    .gallery-win .win-title { background: linear-gradient(90deg,#0831d9,#3a7bd5); }
+    .gallery-body {
+      background: #1a1a2e;
+      padding: 6px;
+      min-height: 180px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+    }
+    .gallery-item {
+      position: relative; aspect-ratio: 4/3; overflow: hidden;
+      border: 2px solid #333; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .gallery-item:hover { border-color: #ff69b4; }
+    .gallery-item img { width:100%; height:100%; object-fit:cover; display:block; }
+    .gallery-empty {
+      grid-column: 1/-1;
+      font-family: 'VT323', monospace; font-size: 16px; color: #444;
+      text-align: center; padding: 20px;
+      border: 1px dashed #333;
+    }
+
+    .dl-btn {
+      position: absolute; bottom: 2px; right: 2px;
+      background: rgba(0,0,0,0.7); color: #fff;
+      font-size: 9px; padding: 1px 4px;
+      border: 1px solid #555; cursor: pointer;
+      font-family: 'Comic Neue', cursive;
+      text-decoration: none; display: none;
+    }
+    .gallery-item:hover .dl-btn { display: block; }
+
+    /* Stickers panel */
+    .stickers-win {
+      background: #ece9d8;
+      border: 2px solid; border-color: #fff #606060 #606060 #fff;
+      box-shadow: 2px 2px 0 #000;
+    }
+    .stickers-win .win-title { background: linear-gradient(90deg,#9400d3,#dd44ff); }
+    .stickers-body { background: #f8f0ff; padding: 8px; }
+    .stickers-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+    .sticker-pick {
+      font-size: 22px; cursor: pointer; padding: 3px;
+      border: 2px solid transparent; border-radius: 3px;
+      transition: border-color 0.15s, transform 0.15s;
+      line-height: 1;
+    }
+    .sticker-pick:hover { border-color: #ff69b4; transform: scale(1.2); }
+
+    /* Countdown setting */
+    .countdown-win {
+      background: #ece9d8;
+      border: 2px solid; border-color: #fff #606060 #606060 #fff;
+      box-shadow: 2px 2px 0 #000;
+    }
+    .countdown-win .win-title { background: linear-gradient(90deg,#006030,#00aa55); }
+    .countdown-body { background: #f0fff4; padding: 8px; }
+    .timer-opts { display: flex; gap: 5px; margin-top: 5px; }
+    .timer-btn {
+      flex: 1; background: linear-gradient(180deg,#ece9d8,#d4d0c8);
+      border: 2px solid; border-color: #fff #808080 #808080 #fff;
+      font-family: 'VT323', monospace; font-size: 18px; color: #000;
+      padding: 3px; cursor: pointer; text-align: center;
+    }
+    .timer-btn.active { border-color: #808080 #fff #fff #808080; background: #000080; color: #ffff00; }
+
+    /* Photo strip mode */
+    .strip-note {
+      font-family: 'VT323', monospace; font-size: 14px; color: #555;
+      margin-top: 4px; line-height: 1.4;
+    }
+
+    /* Active sticker draggable on canvas area */
+    .placed-sticker {
+      position: absolute;
+      font-size: 28px;
+      cursor: move;
+      user-select: none;
+      line-height: 1;
+      z-index: 10;
+    }
+
+    /* ── PHOTO STRIP viewer ── */
+    .strip-viewer {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 9000;
+      align-items: center; justify-content: center;
+    }
+    .strip-viewer.open { display: flex; }
+    .strip-inner {
+      background: #fff;
+      padding: 12px 14px;
+      border: 4px solid #000;
+      box-shadow: 0 0 0 2px #ff69b4, 0 0 0 4px #fff, 0 0 40px rgba(255,105,180,0.5);
+      display: flex; flex-direction: column; gap: 6px;
+      max-height: 90vh; overflow-y: auto;
+      position: relative;
+    }
+    .strip-title {
+      font-family: 'Pacifico', cursive; font-size: 18px; color: #ff1493;
+      text-align: center; margin-bottom: 4px;
+    }
+    .strip-photos { display: flex; flex-direction: column; gap: 6px; }
+    .strip-photos img { width: 240px; display: block; border: 2px solid #ddd; }
+    .strip-close {
+      position: absolute; top: 8px; right: 8px;
+      background: #ff1493; color: #fff; border: none;
+      width: 24px; height: 24px; font-size: 14px;
+      cursor: pointer; border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .strip-dl {
+      background: linear-gradient(180deg,#60cc40,#2a8818);
+      border: 2px solid; border-color: #90ff60 #1a5008 #1a5008 #90ff60;
+      color: #fff; font-family:'Comic Neue',cursive; font-size:12px;
+      padding: 6px 18px; cursor:pointer; text-align:center;
+      margin-top: 4px;
+    }
+
+    /* ── STATUS ── */
+    .cam-status {
+      background: #000;
+      border-top: 1px solid #333;
+      padding: 4px 10px;
+      font-family: 'VT323', monospace; font-size: 15px;
+      color: #00ff44;
+      display: flex; gap: 14px; flex-wrap: wrap;
+    }
+    .cam-status span { white-space: nowrap; }
+
+  </style>
+</head>
+<body>
+<div class="desktop">
+
+  <!-- DESKTOP ICONS -->
+  <div class="d-icons">
+    <a href="index.html"   class="d-icon"><div class="d-icon-img">🖥️</div><span>My Computer</span></a>
+    <a href="members.html" class="d-icon"><div class="d-icon-img">👥</div><span>Members.exe</span></a>
+    <a href="music.html"   class="d-icon"><div class="d-icon-img">🎵</div><span>Music.exe</span></a>
+    <a href="camera.html"  class="d-icon"><div class="d-icon-img">📷</div><span>Camera.exe</span></a>
+    <a href="#"            class="d-icon"><div class="d-icon-img">🗑️</div><span>Recycle Bin</span></a>
+  </div>
+
+  <!-- Deco -->
+  <div class="deco deco-star" style="top:95px;left:49%;font-size:17px;color:#ff69b4;">✦</div>
+  <div class="deco deco-star" style="top:75px;left:55%;font-size:14px;color:#ffee00;animation-delay:.6s;">✧</div>
+  <div class="deco" style="top:200px;right:330px;font-size:22px;animation:spin-slow 6s linear infinite;pointer-events:none;">📷</div>
+  <div class="deco deco-star" style="top:490px;left:195px;font-size:14px;color:#ff69b4;animation-delay:2s;">✦</div>
+
+  <!-- ══ CAMERA WINDOW ══ -->
+  <div class="win cam-win">
+    <div class="win-title">
+      <div class="win-title-text">📷 Camera.exe — BND Photo Booth v1.0</div>
+      <div class="win-btns">
+        <div class="win-btn">_</div><div class="win-btn">□</div>
+        <div class="win-btn" onclick="document.getElementById('cam-video').srcObject && document.getElementById('cam-video').srcObject.getTracks().forEach(t=>t.stop())">✕</div>
+      </div>
+    </div>
+
+    <div class="cam-body">
+      <div class="cam-layout">
+
+        <!-- ── LEFT: VIDEO + CONTROLS ── -->
+        <div>
+          <!-- Video screen -->
+          <div class="cam-screen-wrap" id="cam-screen-wrap">
+
+            <video id="cam-video" autoplay playsinline muted></video>
+
+            <!-- Off placeholder -->
+            <div class="cam-off" id="cam-off">
+              <div class="cam-off-icon">📷</div>
+              <div class="cam-off-text">Camera is off<br/>Click START CAMERA below</div>
+            </div>
+
+            <!-- REC badge -->
+            <div class="rec-badge" id="rec-badge">
+              <div class="rec-dot"></div> REC
+            </div>
+
+            <!-- Timestamp -->
+            <div class="cam-timestamp" id="cam-timestamp">--:--:--<br/>--/--/----</div>
+
+            <!-- Filter label -->
+            <div class="filter-label" id="filter-label">✦ NORMAL</div>
+
+            <!-- Sticker layer (click to add stickers) -->
+            <div class="sticker-layer" id="sticker-layer"></div>
+
+            <!-- Flash overlay -->
+            <div class="flash-overlay" id="flash-overlay"></div>
+
+            <!-- Countdown -->
+            <div class="countdown-display" id="countdown-display">3</div>
+
+          </div><!-- cam-screen-wrap -->
+
+          <!-- Main controls -->
+          <div class="cam-controls">
+            <button class="cam-btn green" id="btn-start" onclick="startCamera()">📷 START CAMERA</button>
+            <button class="cam-btn big"   id="btn-snap"  onclick="triggerSnap()" disabled>📸 TAKE PHOTO!</button>
+            <button class="cam-btn"       id="btn-strip" onclick="takeStrip()"   disabled>🎞️ PHOTO STRIP (3x)</button>
+            <button class="cam-btn"       onclick="toggleMirror()">↔️ FLIP</button>
+            <button class="cam-btn"       onclick="clearStickers()">🗑️ CLEAR</button>
+          </div>
+
+          <!-- Filter row -->
+          <div class="filter-row" id="filter-row">
+            <button class="filter-btn active" onclick="setFilter('none','✦ NORMAL',this)">Normal</button>
+            <button class="filter-btn" onclick="setFilter('pink','💗 PINK',this)">💗 Pink</button>
+            <button class="filter-btn" onclick="setFilter('retro','📼 RETRO',this)">📼 Retro</button>
+            <button class="filter-btn" onclick="setFilter('dreamy','🌸 DREAMY',this)">🌸 Dreamy</button>
+            <button class="filter-btn" onclick="setFilter('bw','⬛ B&amp;W',this)">⬛ B&amp;W</button>
+            <button class="filter-btn" onclick="setFilter('vhs','📺 VHS',this)">📺 VHS</button>
+            <button class="filter-btn" onclick="setFilter('cool','🧊 COOL',this)">🧊 Cool</button>
+            <button class="filter-btn" onclick="setFilter('warm','🔥 WARM',this)">🔥 Warm</button>
+          </div>
+        </div>
+
+        <!-- ── RIGHT SIDEBAR ── -->
+        <div class="cam-sidebar">
+
+          <!-- Gallery -->
+          <div class="gallery-win">
+            <div class="win-title">
+              <div class="win-title-text">🖼️ Gallery (click to view)</div>
+              <div class="win-btns"><div class="win-btn">✕</div></div>
+            </div>
+            <div class="gallery-body" id="gallery-body">
+              <div class="gallery-empty" id="gallery-empty">No photos yet!<br/>📸 Take a pic!</div>
+            </div>
+            <div style="background:#ece9d8;padding:4px 6px;display:flex;gap:4px;border-top:1px solid #ccc;">
+              <button class="cam-btn" style="font-size:10px;padding:3px 8px;" onclick="clearGallery()">🗑 Clear All</button>
+              <span id="photo-count" style="font-family:'VT323',monospace;font-size:14px;color:#555;padding:3px 0;">0 photos</span>
+            </div>
+          </div>
+
+          <!-- Stickers -->
+          <div class="stickers-win">
+            <div class="win-title">
+              <div class="win-title-text">✨ Stickers (click to add)</div>
+              <div class="win-btns"><div class="win-btn">✕</div></div>
+            </div>
+            <div class="stickers-body">
+              <div style="font-family:'VT323',monospace;font-size:13px;color:#888;margin-bottom:5px;">Click a sticker, then click on the camera!</div>
+              <div class="stickers-grid">
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">💚</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">✨</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">⭐</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🌸</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">💗</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🎵</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🌟</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🦋</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🌈</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">💫</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🎀</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🌺</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">💖</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🍀</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🎶</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🦋</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">✦</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🐠</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">🌻</span>
+                <span class="sticker-pick" onclick="selectSticker(this.textContent)">💝</span>
+              </div>
+              <div style="font-family:'VT323',monospace;font-size:13px;color:#aa44cc;margin-top:6px;" id="sticker-status">No sticker selected</div>
+            </div>
+          </div>
+
+          <!-- Countdown timer -->
+          <div class="countdown-win">
+            <div class="win-title">
+              <div class="win-title-text">⏱ Timer &amp; Options</div>
+              <div class="win-btns"><div class="win-btn">✕</div></div>
+            </div>
+            <div class="countdown-body">
+              <div style="font-family:'VT323',monospace;font-size:14px;color:#006030;">COUNTDOWN TIMER:</div>
+              <div class="timer-opts">
+                <button class="timer-btn active" id="timer-0" onclick="setTimer(0,this)">OFF</button>
+                <button class="timer-btn" id="timer-3"  onclick="setTimer(3,this)">3s</button>
+                <button class="timer-btn" id="timer-5"  onclick="setTimer(5,this)">5s</button>
+                <button class="timer-btn" id="timer-10" onclick="setTimer(10,this)">10s</button>
+              </div>
+              <div style="font-family:'VT323',monospace;font-size:14px;color:#006030;margin-top:8px;">STRIP LAYOUT:</div>
+              <div class="timer-opts">
+                <button class="timer-btn active" id="strip-3" onclick="setStripCount(3,this)">3 shots</button>
+                <button class="timer-btn" id="strip-4" onclick="setStripCount(4,this)">4 shots</button>
+              </div>
+              <div class="strip-note">Photo strip takes multiple shots with 1.5s between each!</div>
+            </div>
+          </div>
+
+        </div><!-- sidebar -->
+      </div><!-- cam-layout -->
+    </div><!-- cam-body -->
+
+    <!-- Status bar -->
+    <div class="cam-status">
+      <span id="status-cam">📷 Camera: OFF</span>
+      <span id="status-filter">🎨 Filter: Normal</span>
+      <span id="status-sticker">✨ Sticker: none</span>
+      <span id="status-photos">🖼️ Photos: 0</span>
+    </div>
+  </div><!-- cam-win -->
+
+</div><!-- desktop -->
+
+<!-- ══ PHOTO STRIP VIEWER ══ -->
+<div class="strip-viewer" id="strip-viewer">
+  <div class="strip-inner">
+    <button class="strip-close" onclick="closeStrip()">✕</button>
+    <div class="strip-title">✨ BND Photo Strip ✨</div>
+    <div class="strip-photos" id="strip-photos"></div>
+    <button class="strip-dl" onclick="downloadStrip()">💾 Save Strip as PNG</button>
+  </div>
+</div>
+
+<!-- Flash canvas (hidden, used to composite stickers onto photo) -->
+<canvas id="snap-canvas" style="display:none;"></canvas>
+
+<div class="no-signal">
+  <div class="ns-bars"><div class="nsb nsb1"></div><div class="nsb nsb2"></div><div class="nsb nsb3"></div><div class="nsb nsb4"></div></div>
+  <span class="ns-lbl">NO SIGNAL</span>
+</div>
+
+<div class="marquee-strip">
+  <marquee behavior="scroll" direction="left" scrollamount="4">
+    📷 BND PHOTO BOOTH ★ &nbsp;&nbsp; TAKE A SELFIE WITH ONEDOOR 💚 &nbsp;&nbsp; ★ ADD STICKERS &amp; FILTERS ★ &nbsp;&nbsp; SAVE YOUR PHOTO STRIP! &nbsp;&nbsp; ★ WHO'S THERE? BOYNEXTDOOR! ★ &nbsp;&nbsp;
+  </marquee>
+</div>
+
+<div class="taskbar">
+  <div class="start-btn">⊞ start</div>
+  <div class="taskbar-sep"></div>
+  <a href="index.html"   class="tb-btn">🏠 Home</a>
+  <a href="members.html" class="tb-btn">👥 Members</a>
+  <a href="music.html"   class="tb-btn">🎵 Music</a>
+  <a href="camera.html"  class="tb-btn active">📷 Camera</a>
+  <div class="taskbar-right"><span class="tb-clock" id="tb-clock">🔊 &nbsp;--:-- --</span></div>
+</div>
+
+<script>
+/* ============================================================
+   BND CAMERA.exe — JavaScript
+   Features: live webcam, 8 filters, stickers, countdown timer,
+             single shot, photo strip (3-4x), download
+============================================================ */
+
+// ── STATE ──
+let stream       = null;
+let currentFilter= 'none';
+let selectedSticker = null;
+let timerDelay   = 0;
+let stripCount   = 3;
+let isMirrored   = true;
+let photoGallery = [];    // array of dataURLs
+let stripQueue   = [];
+let takingStrip  = false;
+
+const video      = document.getElementById('cam-video');
+const camOff     = document.getElementById('cam-off');
+const recBadge   = document.getElementById('rec-badge');
+const flashEl    = document.getElementById('flash-overlay');
+const countdownEl= document.getElementById('countdown-display');
+const filterLabel= document.getElementById('filter-label');
+const stickerLayer = document.getElementById('sticker-layer');
+const canvas     = document.getElementById('snap-canvas');
+const ctx        = canvas.getContext('2d');
+
+// ── CLOCK ──
+function updateClock(){
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  const mo= String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  const y = now.getFullYear();
+  document.getElementById('cam-timestamp').innerHTML = `${h}:${m}:${s}<br/>${mo}/${d}/${y}`;
+  const tb = document.getElementById('tb-clock');
+  if(tb) tb.textContent = `🔊  ${h}:${m} ${now.getHours()<12?'AM':'PM'}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── START CAMERA ──
+async function startCamera(){
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width:{ideal:1280}, height:{ideal:720} },
+      audio: false
+    });
+    video.srcObject = stream;
+    camOff.style.display = 'none';
+    recBadge.classList.add('active');
+    document.getElementById('btn-snap').disabled  = false;
+    document.getElementById('btn-strip').disabled = false;
+    document.getElementById('btn-start').textContent = '🔴 CAMERA ON';
+    document.getElementById('btn-start').classList.add('green');
+    document.getElementById('status-cam').textContent = '📷 Camera: LIVE 🔴';
+  } catch(err) {
+    camOff.querySelector('.cam-off-text').innerHTML =
+      '⚠️ Camera access denied!<br/>Allow camera in your<br/>browser settings and reload.';
+    console.error(err);
+  }
+}
+
+// ── FILTERS ──
+function setFilter(f, label, btn){
+  currentFilter = f;
+  video.className = 'filter-' + f;
+  filterLabel.textContent = label;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('status-filter').textContent = '🎨 Filter: ' + label;
+}
+
+// ── MIRROR ──
+function toggleMirror(){
+  isMirrored = !isMirrored;
+  video.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+}
+
+// ── STICKERS ──
+function selectSticker(emoji){
+  selectedSticker = emoji;
+  document.getElementById('sticker-status').textContent = 'Selected: ' + emoji + ' — click on camera!';
+  document.getElementById('status-sticker').textContent = '✨ Sticker: ' + emoji;
+  document.getElementById('cam-screen-wrap').style.cursor = 'crosshair';
+}
+
+document.getElementById('cam-screen-wrap').addEventListener('click', function(e){
+  if(!selectedSticker) return;
+  const rect = this.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1);
+  const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1);
+  const el = document.createElement('div');
+  el.className = 'placed-sticker';
+  el.textContent = selectedSticker;
+  el.style.left = x + '%';
+  el.style.top  = y + '%';
+  el.style.transform = 'translate(-50%,-50%)';
+  // Make it draggable
+  makeDraggable(el);
+  // Double-click to remove
+  el.addEventListener('dblclick', () => el.remove());
+  stickerLayer.appendChild(el);
+  selectedSticker = null;
+  document.getElementById('sticker-status').textContent = 'Sticker placed! Dbl-click to remove';
+  document.getElementById('status-sticker').textContent = '✨ Sticker: none';
+  this.style.cursor = 'default';
+});
+
+function makeDraggable(el){
+  let dragging=false, ox=0, oy=0;
+  el.addEventListener('mousedown', e=>{
+    dragging=true;
+    ox = e.clientX - el.getBoundingClientRect().left;
+    oy = e.clientY - el.getBoundingClientRect().top;
+    e.stopPropagation();
+  });
+  document.addEventListener('mousemove', e=>{
+    if(!dragging) return;
+    const wrap = document.getElementById('cam-screen-wrap');
+    const rect = wrap.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1);
+    const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1);
+    el.style.left = x + '%';
+    el.style.top  = y + '%';
+  });
+  document.addEventListener('mouseup', ()=>{ dragging=false; });
+}
+
+function clearStickers(){
+  stickerLayer.innerHTML = '';
+}
+
+// ── COUNTDOWN ──
+function setTimer(val, btn){
+  timerDelay = val;
+  document.querySelectorAll('.timer-btn[id^="timer-"]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setStripCount(val, btn){
+  stripCount = val;
+  document.querySelectorAll('.timer-btn[id^="strip-"]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function runCountdown(seconds){
+  return new Promise(resolve => {
+    if(seconds === 0){ resolve(); return; }
+    let remaining = seconds;
+    countdownEl.textContent = remaining;
+    countdownEl.classList.add('show');
+    const interval = setInterval(()=>{
+      remaining--;
+      if(remaining <= 0){
+        clearInterval(interval);
+        countdownEl.classList.remove('show');
+        countdownEl.style.opacity = 0;
+        resolve();
+      } else {
+        countdownEl.textContent = remaining;
+        countdownEl.classList.remove('show');
+        void countdownEl.offsetWidth; // reflow to re-trigger animation
+        countdownEl.classList.add('show');
+      }
+    }, 1000);
+  });
+}
+
+// ── CAPTURE PHOTO (with filter + stickers composited) ──
+function capturePhoto(){
+  const wrap = document.getElementById('cam-screen-wrap');
+  const w = video.videoWidth  || 640;
+  const h = video.videoHeight || 480;
+  canvas.width  = w;
+  canvas.height = h;
+
+  // Apply filter via canvas
+  ctx.filter = getCanvasFilter(currentFilter);
+  if(isMirrored){
+    ctx.translate(w, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(video, 0, 0, w, h);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.filter = 'none';
+
+  // Draw stickers onto canvas
+  const stickers = stickerLayer.querySelectorAll('.placed-sticker');
+  const wrapRect  = wrap.getBoundingClientRect();
+  stickers.forEach(s => {
+    const r = s.getBoundingClientRect();
+    const cx = (r.left + r.width/2  - wrapRect.left) / wrapRect.width  * w;
+    const cy = (r.top  + r.height/2 - wrapRect.top)  / wrapRect.height * h;
+    const fontSize = Math.round(w * 0.06);
+    ctx.font = fontSize + 'px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(s.textContent, cx, cy);
+  });
+
+  return canvas.toDataURL('image/png');
+}
+
+function getCanvasFilter(f){
+  const map = {
+    none:'none', pink:'sepia(0.3) saturate(1.8) hue-rotate(300deg) brightness(1.1)',
+    retro:'sepia(0.8) contrast(1.2) brightness(0.9) saturate(1.4)',
+    dreamy:'saturate(1.6) brightness(1.15) hue-rotate(10deg)',
+    bw:'grayscale(1) contrast(1.1)',
+    vhs:'saturate(1.8) contrast(1.3) hue-rotate(-10deg) brightness(0.9)',
+    cool:'saturate(1.4) hue-rotate(180deg) brightness(1.1)',
+    warm:'sepia(0.4) saturate(1.6) brightness(1.1) contrast(1.1)'
+  };
+  return map[f] || 'none';
+}
+
+// ── FLASH ──
+function doFlash(){
+  flashEl.classList.remove('flash');
+  void flashEl.offsetWidth;
+  flashEl.classList.add('flash');
+}
+
+// ── ADD TO GALLERY ──
+function addToGallery(dataURL){
+  photoGallery.push(dataURL);
+  const empty = document.getElementById('gallery-empty');
+  if(empty) empty.remove();
+
+  const item = document.createElement('div');
+  item.className = 'gallery-item';
+  const img = document.createElement('img');
+  img.src = dataURL;
+  item.appendChild(img);
+
+  // Download link
+  const dl = document.createElement('a');
+  dl.className = 'dl-btn';
+  dl.textContent = '💾 Save';
+  dl.href = dataURL;
+  dl.download = 'bnd_photo_' + Date.now() + '.png';
+  item.appendChild(dl);
+
+  // Click to open full
+  img.addEventListener('click', () => {
+    const w = window.open();
+    w.document.write('<img src="'+dataURL+'" style="max-width:100%;"/>');
+  });
+
+  document.getElementById('gallery-body').appendChild(item);
+  const count = document.querySelectorAll('.gallery-item').length;
+  document.getElementById('photo-count').textContent = count + ' photo' + (count>1?'s':'');
+  document.getElementById('status-photos').textContent = '🖼️ Photos: ' + count;
+}
+
+function clearGallery(){
+  photoGallery = [];
+  const gb = document.getElementById('gallery-body');
+  gb.innerHTML = '<div class="gallery-empty" id="gallery-empty">No photos yet!<br/>📸 Take a pic!</div>';
+  document.getElementById('photo-count').textContent = '0 photos';
+  document.getElementById('status-photos').textContent = '🖼️ Photos: 0';
+}
+
+// ── SINGLE SNAP ──
+async function triggerSnap(){
+  if(!stream) return;
+  document.getElementById('btn-snap').disabled = true;
+  await runCountdown(timerDelay);
+  doFlash();
+  const dataURL = capturePhoto();
+  addToGallery(dataURL);
+  document.getElementById('btn-snap').disabled = false;
+}
+
+// ── PHOTO STRIP ──
+async function takeStrip(){
+  if(!stream || takingStrip) return;
+  takingStrip = true;
+  stripQueue = [];
+  document.getElementById('btn-strip').disabled = true;
+  document.getElementById('btn-snap').disabled  = true;
+
+  // Initial countdown
+  await runCountdown(timerDelay || 3);
+
+  for(let i=0; i<stripCount; i++){
+    if(i > 0){
+      // Short pause between shots
+      await new Promise(r=>setTimeout(r, 1500));
+      // Show shot number
+      countdownEl.textContent = '📸 ' + (i+1) + '/' + stripCount;
+      countdownEl.classList.remove('show'); void countdownEl.offsetWidth; countdownEl.classList.add('show');
+      await new Promise(r=>setTimeout(r,600));
+      countdownEl.classList.remove('show'); countdownEl.style.opacity=0;
+    }
+    doFlash();
+    const url = capturePhoto();
+    stripQueue.push(url);
+    addToGallery(url);
+  }
+
+  takingStrip = false;
+  document.getElementById('btn-strip').disabled = false;
+  document.getElementById('btn-snap').disabled  = false;
+  openStripViewer();
+}
+
+// ── STRIP VIEWER ──
+function openStripViewer(){
+  const viewer = document.getElementById('strip-viewer');
+  const photos = document.getElementById('strip-photos');
+  photos.innerHTML = '';
+  stripQueue.forEach((url, i) => {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = 'Strip photo ' + (i+1);
+    photos.appendChild(img);
+  });
+  viewer.classList.add('open');
+}
+
+function closeStrip(){
+  document.getElementById('strip-viewer').classList.remove('open');
+}
+
+function downloadStrip(){
+  // Create a tall canvas combining all strip photos
+  if(!stripQueue.length) return;
+  const img0 = new Image(); img0.src = stripQueue[0];
+  img0.onload = () => {
+    const w = img0.width;
+    const h = img0.height;
+    const padding = 20;
+    const stripCanvas = document.createElement('canvas');
+    stripCanvas.width  = w + padding*2;
+    stripCanvas.height = (h + padding) * stripQueue.length + padding + 80;
+    const sc = stripCanvas.getContext('2d');
+
+    // White background with pink border
+    sc.fillStyle = '#fff';
+    sc.fillRect(0,0,stripCanvas.width,stripCanvas.height);
+    sc.fillStyle = '#ff69b4';
+    sc.fillRect(0,0,stripCanvas.width,10);
+    sc.fillRect(0,stripCanvas.height-10,stripCanvas.width,10);
+
+    // Draw photos
+    const loadAndDraw = (idx) => {
+      if(idx >= stripQueue.length){
+        // Title at bottom
+        sc.fillStyle = '#ff1493';
+        sc.font = 'bold 32px serif';
+        sc.textAlign = 'center';
+        sc.fillText('✨ BOYNEXTDOOR ✨', stripCanvas.width/2, stripCanvas.height - 30);
+        sc.font = '18px serif';
+        sc.fillStyle = '#888';
+        sc.fillText('ONEDOOR 💚  ' + new Date().toLocaleDateString(), stripCanvas.width/2, stripCanvas.height - 12);
+        // Download
+        const a = document.createElement('a');
+        a.download = 'bnd_strip_' + Date.now() + '.png';
+        a.href = stripCanvas.toDataURL('image/png');
+        a.click();
+        return;
+      }
+      const img = new Image(); img.src = stripQueue[idx];
+      img.onload = () => {
+        sc.drawImage(img, padding, padding + idx*(h+padding), w, h);
+        loadAndDraw(idx+1);
+      };
+    };
+    loadAndDraw(0);
+  };
+}
+</script>
+
+</body>
+</html>
